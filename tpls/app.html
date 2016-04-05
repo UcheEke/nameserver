@@ -1,0 +1,19 @@
+<h4>{{ name }}</h4>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="#person of people">
+            <td>{{person.id}}</td>
+            <td>{{person.first_name}} {{ person.last_name }}</td>
+            <td>{{person.age}}</td>
+        </tr>
+    </tbody>
+    <caption class="caption">Top {{num_persons}} Club Members 2015</caption>
+</table>
