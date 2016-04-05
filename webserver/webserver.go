@@ -2,14 +2,14 @@ package main
 
 import (
 	"bufio"
-	"os"
-	"log"
-	"strings"
-	"math/rand"
-	"time"
-	"net/http"
 	"encoding/json"
 	"fmt"
+	"log"
+	"math/rand"
+	"net/http"
+	"os"
+	"strings"
+	"time"
 )
 
 func errorCheck(err error) {
@@ -31,9 +31,9 @@ func dataStrip(filename, sep string, processFunc func(str, sep string) []string)
 	defer fd.Close()
 	{
 		s := bufio.NewScanner(fd)
-		for (s.Scan()) {
+		for s.Scan() {
 			str := s.Text()
-			line = processFunc(str,sep)
+			line = processFunc(str, sep)
 			for _, datapoint := range line {
 				data = append(data, string(datapoint))
 			}
@@ -71,28 +71,30 @@ func getLastnames(str string, sep string) []string {
 	return result
 }
 
-
 type Person struct {
-	ID int			`json:"id"`
-	Firstname string 	`json:"first_name"`
-	Lastname string		`json:"last_name"`
-	Age int			`json:"age"`
+	ID        int    `json:"id"`
+	Firstname string `json:"first_name"`
+	Lastname  string `json:"last_name"`
+	Age       int    `json:"age"`
 }
 
 type PeopleServer struct {
 	firstnames []string
-	lastnames []string
+	lastnames  []string
 }
 
-func (ps *PeopleServer) ServeHTTP(w http.ResponseWriter, req *http.Request){
+func (ps *PeopleServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	var people []Person
 
-	for i := 0; i < 10;  i++ {
+	for i := 0; i < 10; i++ {
 		people = append(people, createPerson(ps.firstnames, ps.lastnames, i+1))
 	}
 
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
-	// For testing purposes - REMOVE
+
+	// CROSS-ORIGIN REQUEST - Allows communication between localhost
+	// localhost based server and client. FOR TESTING ONLY, REMOVE
+	// OTHERWISE
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if data, err := json.Marshal(people); err != nil {
@@ -122,12 +124,12 @@ func createPerson(forenames, surnames []string, id int) Person {
 	return person
 }
 
-func main(){
+func main() {
 	mux := http.NewServeMux()
 	ps := PeopleServer{}
 
-	ps.firstnames = dataStrip("firstnames.txt","\t", getFirstnames)
-	ps.lastnames = dataStrip("lastnames.txt","\t", getLastnames)
+	ps.firstnames = dataStrip("firstnames.txt", "\t", getFirstnames)
+	ps.lastnames = dataStrip("lastnames.txt", "\t", getLastnames)
 
 	mux.Handle("/", &ps)
 
@@ -135,5 +137,3 @@ func main(){
 	fmt.Printf("Listening on port %d...\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 }
-
-
