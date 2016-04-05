@@ -52,7 +52,6 @@ func getFirstnames(str string, sep string) []string {
 		result = append(result, strings.TrimSpace(line[1]))
 		result = append(result, strings.TrimSpace(line[2]))
 	}
-	//fmt.Println(result)
 	return result
 }
 
